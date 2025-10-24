@@ -6,7 +6,7 @@ A curated collection of free, open-source tools for AI engineers, developers, an
 
 ### [Free Website Scraping Tools](./free-tools/)
 
-Two powerful Python utilities for website scraping and documentation archiving:
+Three powerful Python utilities for website scraping, documentation archiving, and visual capture:
 
 #### 1. **website_scraper.py** - Basic Metadata Scraper
 - Extracts page titles, meta descriptions, and URLs
@@ -20,6 +20,12 @@ Two powerful Python utilities for website scraping and documentation archiving:
 - Ideal for offline documentation and knowledge bases
 - [Learn more →](./free-tools/README.md#tool-2-documentation_scraperpy)
 
+#### 3. **capture-screenshots.py** - URL Screenshot Capture Tool
+- Captures full-page and rolling section screenshots from any URL
+- Supports custom viewport sizes (desktop, mobile, tablet)
+- Perfect for design documentation, SEO audits, and visual archives
+- [Learn more →](./free-tools/README-screenshots.md)
+
 ## 🚀 Quick Start
 
 ```bash
@@ -27,7 +33,7 @@ Two powerful Python utilities for website scraping and documentation archiving:
 git clone https://github.com/VilovietaSEO/ai-engineers.git
 cd ai-engineers
 
-# Install dependencies
+# Install dependencies for scrapers
 pip install requests==2.31.0 beautifulsoup4==4.12.3 lxml==5.1.0 urllib3==2.2.0 markdownify==3.12.0
 
 # Run the basic scraper
@@ -35,17 +41,28 @@ python free-tools/website_scraper.py https://example.com
 
 # Or run the documentation scraper
 python free-tools/documentation_scraper.py https://docs.example.com
+
+# For screenshot capture, install Playwright
+pip install playwright
+playwright install chromium
+
+# Capture screenshots
+python3 free-tools/capture-screenshots.py https://example.com
 ```
 
 ## 📋 Requirements
 
 - **Python 3.7+**
-- Required libraries (see [free-tools/README.md](./free-tools/README.md) for details):
-  - requests==2.31.0
-  - beautifulsoup4==4.12.3
-  - lxml==5.1.0
-  - urllib3==2.2.0
-  - markdownify==3.12.0
+
+### Scraping Tools
+- requests==2.31.0
+- beautifulsoup4==4.12.3
+- lxml==5.1.0
+- urllib3==2.2.0
+- markdownify==3.12.0
+
+### Screenshot Tool
+- playwright==1.55.0 (+ Chromium browser)
 
 ## 📚 Documentation
 
