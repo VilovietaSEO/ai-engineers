@@ -1,0 +1,4 @@
+# Schema Visualizer Requirements
+# Minimal dependencies for standalone tool
+
+pyvis==0.3.2

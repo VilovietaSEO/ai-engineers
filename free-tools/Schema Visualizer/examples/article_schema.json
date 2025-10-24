@@ -1,0 +1,23 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Article",
+  "headline": "How to Optimize Your Local SEO Strategy",
+  "image": "https://example.com/article-image.jpg",
+  "author": {
+    "@type": "Person",
+    "name": "Jane Smith",
+    "url": "https://example.com/authors/jane-smith"
+  },
+  "publisher": {
+    "@type": "Organization",
+    "name": "SEO News",
+    "logo": {
+      "@type": "ImageObject",
+      "url": "https://example.com/logo.png"
+    }
+  },
+  "datePublished": "2024-01-15",
+  "dateModified": "2024-01-20",
+  "description": "Learn the best practices for local SEO optimization in 2024.",
+  "articleBody": "In this comprehensive guide, we'll explore the essential strategies for improving your local search visibility..."
+}

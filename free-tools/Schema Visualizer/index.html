@@ -1,0 +1,898 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Schema Visualizer - Powered by Vibe Coders</title>
+
+    <!-- Vis.js Network -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/dist/vis-network.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/vis-network/9.1.2/dist/vis-network.min.js"></script>
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --card: #f5f5f4;
+            --ring: #6366f1;
+            --input: #d6d3d1;
+            --muted: #e7e5e4;
+            --accent: #f3e5f5;
+            --border: #d6d3d1;
+            --radius: 1.25rem;
+            --chart-1: #6366f1;
+            --chart-2: #4f46e5;
+            --chart-3: #4338ca;
+            --chart-4: #3730a3;
+            --chart-5: #312e81;
+            --popover: #f5f5f4;
+            --primary: #6366f1;
+            --sidebar: #d6d3d1;
+            --font-mono: Roboto Mono, monospace;
+            --font-sans: Plus Jakarta Sans, sans-serif;
+            --secondary: #d6d3d1;
+            --background: #e7e5e4;
+            --font-serif: Lora, serif;
+            --foreground: #1e293b;
+            --destructive: #ef4444;
+            --shadow-blur: 10px;
+            --shadow-color: hsl(240 4% 60%);
+            --sidebar-ring: #6366f1;
+            --shadow-spread: 4px;
+            --shadow-opacity: 0.18;
+            --sidebar-accent: #f3e5f5;
+            --sidebar-border: #d6d3d1;
+            --card-foreground: #1e293b;
+            --shadow-offset-x: 2px;
+            --shadow-offset-y: 2px;
+            --sidebar-primary: #6366f1;
+            --muted-foreground: #6b7280;
+            --accent-foreground: #374151;
+            --popover-foreground: #1e293b;
+            --primary-foreground: #ffffff;
+            --sidebar-foreground: #1e293b;
+            --secondary-foreground: #4b5563;
+            --destructive-foreground: #ffffff;
+            --sidebar-accent-foreground: #374151;
+            --sidebar-primary-foreground: #ffffff;
+
+            /* Computed values */
+            --primary-gradient: linear-gradient(135deg, var(--primary) 0%, var(--chart-3) 100%);
+            --secondary-gradient: linear-gradient(135deg, var(--accent) 0%, var(--destructive) 100%);
+            --success-color: #10b981;
+            --error-color: var(--destructive);
+            --warning-color: #f59e0b;
+        }
+
+        .dark {
+            --card: #2c2825;
+            --ring: #818cf8;
+            --input: #3a3633;
+            --muted: #2c2825;
+            --accent: #484441;
+            --border: #3a3633;
+            --chart-1: #818cf8;
+            --chart-2: #6366f1;
+            --chart-3: #4f46e5;
+            --chart-4: #4338ca;
+            --chart-5: #3730a3;
+            --popover: #2c2825;
+            --primary: #818cf8;
+            --sidebar: #3a3633;
+            --secondary: #3a3633;
+            --background: #1e1b18;
+            --foreground: #e2e8f0;
+            --destructive: #ef4444;
+            --shadow-color: hsl(0 0% 0%);
+            --sidebar-ring: #818cf8;
+            --sidebar-accent: #484441;
+            --sidebar-border: #3a3633;
+            --card-foreground: #e2e8f0;
+            --sidebar-primary: #818cf8;
+            --muted-foreground: #9ca3af;
+            --accent-foreground: #d1d5db;
+            --popover-foreground: #e2e8f0;
+            --primary-foreground: #1e1b18;
+            --sidebar-foreground: #e2e8f0;
+            --secondary-foreground: #d1d5db;
+            --destructive-foreground: #1e1b18;
+            --sidebar-accent-foreground: #d1d5db;
+            --sidebar-primary-foreground: #1e1b18;
+        }
+
+        body {
+            font-family: var(--font-sans), 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--background);
+            color: var(--foreground);
+            line-height: 1.6;
+            transition: background-color 0.3s ease, color 0.3s ease;
+        }
+
+        /* Header */
+        .header {
+            background: linear-gradient(135deg, #1e293b 0%, #0f172a 100%);
+            padding: 2rem;
+            text-align: center;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+            position: relative;
+            overflow: hidden;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .dark .header {
+            background: linear-gradient(135deg, #0f172a 0%, #020617 100%);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg width="100" height="100" xmlns="http://www.w3.org/2000/svg"><defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="rgba(255,255,255,0.03)" stroke-width="1"/></pattern></defs><rect width="100" height="100" fill="url(%23grid)"/></svg>');
+            opacity: 0.5;
+        }
+
+        .header-content {
+            position: relative;
+            z-index: 1;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            text-shadow: 0 2px 10px rgba(0, 0, 0, 0.5);
+            color: #ffffff;
+        }
+
+        .header h1 i {
+            margin-right: 0.5rem;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.95;
+            margin-bottom: 0.5rem;
+            color: rgba(255, 255, 255, 0.9);
+        }
+
+        .powered-by {
+            font-size: 0.9rem;
+            opacity: 0.9;
+            margin-top: 1rem;
+        }
+
+        .powered-by a {
+            color: #fff;
+            text-decoration: none;
+            font-weight: 600;
+            border-bottom: 2px solid rgba(255, 255, 255, 0.3);
+            padding-bottom: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .powered-by a:hover {
+            border-bottom-color: #fff;
+            transform: translateY(-2px);
+        }
+
+        /* Main Container */
+        .container {
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            gap: 2rem;
+            height: calc(100vh - 200px);
+        }
+
+        /* Input Panel */
+        .input-panel {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+            overflow-y: auto;
+            border: 1px solid var(--border);
+        }
+
+        .section-title {
+            font-size: 1.2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--foreground);
+        }
+
+        .section-title i {
+            color: var(--primary);
+        }
+
+        /* Textarea */
+        .schema-input {
+            width: 100%;
+            min-height: 300px;
+            background: var(--input);
+            border: 2px solid var(--border);
+            border-radius: calc(var(--radius) * 0.5);
+            padding: 1rem;
+            color: var(--foreground);
+            font-family: var(--font-mono), 'Courier New', monospace;
+            font-size: 0.9rem;
+            resize: vertical;
+            transition: all 0.3s ease;
+        }
+
+        .schema-input:focus {
+            outline: none;
+            border-color: var(--ring);
+            box-shadow: 0 0 0 3px color-mix(in srgb, var(--ring) 20%, transparent);
+        }
+
+        /* Buttons */
+        .button-group {
+            display: flex;
+            gap: 0.5rem;
+            flex-wrap: wrap;
+        }
+
+        .btn {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: 8px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            flex: 1;
+            justify-content: center;
+        }
+
+        .btn-primary {
+            background: var(--primary-gradient);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(102, 126, 234, 0.4);
+        }
+
+        .btn-secondary {
+            background: var(--secondary);
+            color: var(--secondary-foreground);
+            border: 1px solid var(--border);
+        }
+
+        .btn-secondary:hover {
+            background: var(--muted);
+        }
+
+        .file-input-wrapper {
+            position: relative;
+            overflow: hidden;
+            display: inline-block;
+            flex: 1;
+        }
+
+        .file-input-wrapper input[type=file] {
+            position: absolute;
+            left: -9999px;
+        }
+
+        /* Details Panel */
+        .details-panel {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            margin-top: 1rem;
+            border: 1px solid var(--border);
+        }
+
+        .stat-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+
+        .stat-card {
+            background: var(--muted);
+            padding: 1rem;
+            border-radius: calc(var(--radius) * 0.5);
+            border-left: 3px solid var(--primary);
+        }
+
+        .stat-label {
+            font-size: 0.85rem;
+            color: var(--muted-foreground);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--foreground);
+        }
+
+        /* Messages */
+        .message {
+            padding: 1rem;
+            border-radius: 8px;
+            margin-top: 1rem;
+            display: flex;
+            align-items: flex-start;
+            gap: 0.75rem;
+        }
+
+        .message i {
+            font-size: 1.2rem;
+            margin-top: 2px;
+        }
+
+        .message-success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid var(--success-color);
+            color: var(--success-color);
+        }
+
+        .message-error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid var(--error-color);
+            color: var(--error-color);
+        }
+
+        .message-warning {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid var(--warning-color);
+            color: var(--warning-color);
+        }
+
+        /* Visualization Panel */
+        .viz-panel {
+            background: var(--card);
+            border-radius: var(--radius);
+            padding: 1.5rem;
+            box-shadow: var(--shadow-offset-x) var(--shadow-offset-y) var(--shadow-blur) var(--shadow-spread) color-mix(in srgb, var(--shadow-color) calc(var(--shadow-opacity) * 100%), transparent);
+            border: 1px solid var(--border);
+        }
+
+        .viz-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .viz-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .viz-btn {
+            padding: 0.5rem 1rem;
+            background: var(--secondary);
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) * 0.4);
+            color: var(--secondary-foreground);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .viz-btn:hover {
+            background: var(--muted);
+        }
+
+        #network-container {
+            width: 100%;
+            height: 800px; /* Fixed height */
+            background: var(--muted);
+            border-radius: calc(var(--radius) * 0.5);
+            border: 2px solid var(--border);
+            position: relative;
+        }
+
+        .empty-state {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: var(--muted-foreground);
+            text-align: center;
+            padding: 2rem;
+            pointer-events: none;
+        }
+
+        .empty-state i {
+            font-size: 4rem;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+            color: var(--primary);
+        }
+
+        .empty-state h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.5rem;
+            color: var(--foreground);
+        }
+
+        /* Examples */
+        .examples {
+            margin-top: 1rem;
+        }
+
+        .example-btn {
+            display: block;
+            width: 100%;
+            padding: 0.75rem;
+            background: var(--accent);
+            border: 1px solid var(--border);
+            border-radius: calc(var(--radius) * 0.4);
+            color: var(--accent-foreground);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin-bottom: 0.5rem;
+            text-align: left;
+        }
+
+        .example-btn:hover {
+            background: var(--muted);
+            border-color: var(--primary);
+        }
+
+        /* Footer */
+        .footer {
+            text-align: center;
+            padding: 2rem;
+            color: var(--muted-foreground);
+        }
+
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 600;
+        }
+
+        .footer a:hover {
+            text-decoration: underline;
+            color: var(--ring);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            display: inline-block;
+            width: 1rem;
+            height: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            border-top-color: white;
+            animation: spin 0.6s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Responsive */
+        @media (max-width: 1024px) {
+            .container {
+                grid-template-columns: 1fr;
+                height: auto;
+            }
+
+            .input-panel {
+                max-height: 600px;
+            }
+
+            .viz-panel {
+                min-height: 600px;
+            }
+        }
+
+        /* Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: var(--muted);
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: var(--border);
+            border-radius: calc(var(--radius) * 0.3);
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: var(--primary);
+        }
+
+        /* Toast Notifications */
+        .toast {
+            position: fixed;
+            bottom: 2rem;
+            right: 2rem;
+            background: var(--card);
+            color: var(--card-foreground);
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius);
+            box-shadow: 0 8px 32px color-mix(in srgb, var(--shadow-color) 50%, transparent);
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            min-width: 300px;
+            animation: slideIn 0.3s ease-out;
+            z-index: 1000;
+            border: 1px solid var(--border);
+            border-left: 4px solid var(--primary);
+        }
+
+        .toast.success {
+            border-left-color: var(--success-color);
+        }
+
+        .toast.error {
+            border-left-color: var(--error-color);
+        }
+
+        .toast.warning {
+            border-left-color: var(--warning-color);
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(400px);
+                opacity: 0;
+            }
+        }
+
+        .toast.hiding {
+            animation: slideOut 0.3s ease-out forwards;
+        }
+
+        /* Mode Toggle */
+        .mode-toggle-container {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--muted);
+            padding: 0.75rem;
+            border-radius: calc(var(--radius) * 0.5);
+            border: 1px solid var(--border);
+            margin-bottom: 1rem;
+        }
+
+        .mode-label {
+            font-size: 0.9rem;
+            color: var(--muted-foreground);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .mode-label i {
+            color: var(--primary);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 140px;
+            height: 34px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .toggle-slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: var(--accent);
+            border: 2px solid var(--border);
+            transition: 0.3s;
+            border-radius: 34px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 8px;
+            font-size: 0.75rem;
+            font-weight: 600;
+        }
+
+        .toggle-slider:before {
+            position: absolute;
+            content: "";
+            height: 26px;
+            width: 66px;
+            left: 2px;
+            bottom: 2px;
+            background: var(--primary);
+            transition: 0.3s;
+            border-radius: 34px;
+        }
+
+        input:checked + .toggle-slider {
+            background: var(--accent);
+            border-color: var(--ring);
+        }
+
+        input:checked + .toggle-slider:before {
+            transform: translateX(66px);
+            background: var(--chart-2);
+        }
+
+        .toggle-text {
+            position: relative;
+            z-index: 1;
+            color: var(--primary-foreground);
+            font-weight: 600;
+        }
+
+        .toggle-text-left {
+            margin-left: 4px;
+        }
+
+        .toggle-text-right {
+            margin-right: 4px;
+        }
+
+        /* Theme Toggle Button */
+        .theme-toggle {
+            position: absolute;
+            top: 1rem;
+            right: 1rem;
+            background: rgba(255, 255, 255, 0.2);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            z-index: 10;
+        }
+
+        .theme-toggle:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .theme-toggle i {
+            color: white;
+            font-size: 1.2rem;
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <button class="theme-toggle" onclick="toggleTheme()" title="Toggle theme">
+            <i class="fas fa-moon" id="theme-icon"></i>
+        </button>
+        <div class="header-content">
+            <h1><i class="fas fa-project-diagram"></i>Schema Visualizer</h1>
+            <p>Transform Schema.org markup or any JSON data into beautiful, interactive visualizations</p>
+            <div class="powered-by">
+                ⚡ Powered by <a href="https://www.skool.com/ai-agent-vibe-engineers" target="_blank" rel="noopener">Vibe Coders</a>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Container -->
+    <div class="container">
+        <!-- Input Panel -->
+        <aside class="input-panel">
+            <div>
+                <div class="section-title">
+                    <i class="fas fa-code"></i>
+                    <span>JSON Input</span>
+                </div>
+
+                <!-- Mode Toggle -->
+                <div class="mode-toggle-container">
+                    <div class="mode-label">
+                        <i class="fas fa-toggle-on"></i>
+                        <span>Visualization Mode</span>
+                    </div>
+                    <label class="toggle-switch">
+                        <input type="checkbox" id="mode-toggle" onchange="toggleMode()">
+                        <span class="toggle-slider">
+                            <span class="toggle-text toggle-text-left">Schema</span>
+                            <span class="toggle-text toggle-text-right">Generic</span>
+                        </span>
+                    </label>
+                </div>
+
+                <textarea
+                    id="schema-input"
+                    class="schema-input"
+                    placeholder='Paste your Schema.org JSON-LD here...
+
+Example:
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "John Doe",
+  "jobTitle": "Software Engineer",
+  "url": "https://example.com"
+}'></textarea>
+            </div>
+
+            <div class="button-group">
+                <button class="btn btn-primary" onclick="visualizeSchema()">
+                    <i class="fas fa-play"></i>
+                    Visualize
+                </button>
+                <button class="btn btn-secondary" onclick="clearInput()">
+                    <i class="fas fa-times"></i>
+                    Clear
+                </button>
+            </div>
+
+            <div class="button-group">
+                <div class="file-input-wrapper">
+                    <label for="file-input" class="btn btn-secondary" style="margin: 0;">
+                        <i class="fas fa-upload"></i>
+                        Upload JSON
+                    </label>
+                    <input type="file" id="file-input" accept=".json,.jsonld" onchange="handleFileUpload(event)">
+                </div>
+            </div>
+
+            <!-- Examples -->
+            <div class="examples">
+                <div class="section-title">
+                    <i class="fas fa-lightbulb"></i>
+                    <span>Quick Examples</span>
+                </div>
+                <button class="example-btn" onclick="loadExample('person')">
+                    <i class="fas fa-user"></i> Person Schema
+                </button>
+                <button class="example-btn" onclick="loadExample('product')">
+                    <i class="fas fa-box"></i> Product Schema
+                </button>
+                <button class="example-btn" onclick="loadExample('local_business')">
+                    <i class="fas fa-store"></i> Local Business Schema
+                </button>
+                <button class="example-btn" onclick="loadExample('article')">
+                    <i class="fas fa-newspaper"></i> Article Schema
+                </button>
+            </div>
+
+            <!-- Details Panel -->
+            <div class="details-panel" id="details-panel" style="display: none;">
+                <div class="section-title">
+                    <i class="fas fa-chart-bar"></i>
+                    <span>Schema Details</span>
+                </div>
+                <div class="stat-grid" id="stats-grid"></div>
+                <div id="messages"></div>
+            </div>
+        </aside>
+
+        <!-- Visualization Panel -->
+        <main class="viz-panel">
+            <div class="viz-header">
+                <div class="section-title">
+                    <i class="fas fa-eye"></i>
+                    <span>Visualization</span>
+                </div>
+                <div class="viz-controls">
+                    <button class="viz-btn" onclick="fitNetwork()" title="Fit to screen">
+                        <i class="fas fa-expand"></i>
+                    </button>
+                    <button class="viz-btn" onclick="resetPhysics()" title="Reset layout">
+                        <i class="fas fa-sync"></i>
+                    </button>
+                    <button class="viz-btn" onclick="exportImage()" title="Export as image">
+                        <i class="fas fa-download"></i>
+                    </button>
+                </div>
+            </div>
+            <div id="network-container">
+                <div class="empty-state" id="empty-state">
+                    <i class="fas fa-project-diagram"></i>
+                    <h3>Ready to visualize!</h3>
+                    <p>Paste your Schema.org JSON-LD in the input area and click "Visualize"<br>or try one of the quick examples.</p>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <p>Built with ❤️ by Rabih Rizk for <a href="https://www.skool.com/ai-agent-vibe-engineers" target="_blank" rel="noopener">Vibe Coders</a></p>
+    </footer>
+
+    <script src="schema-parser.js"></script>
+    <script>
+        // Theme management
+        function toggleTheme() {
+            const html = document.documentElement;
+            const themeIcon = document.getElementById('theme-icon');
+            const isDark = html.classList.contains('dark');
+
+            if (isDark) {
+                html.classList.remove('dark');
+                themeIcon.classList.remove('fa-sun');
+                themeIcon.classList.add('fa-moon');
+                localStorage.setItem('theme', 'light');
+            } else {
+                html.classList.add('dark');
+                themeIcon.classList.remove('fa-moon');
+                themeIcon.classList.add('fa-sun');
+                localStorage.setItem('theme', 'dark');
+            }
+        }
+
+        // Load theme preference on page load
+        (function() {
+            const savedTheme = localStorage.getItem('theme');
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const themeIcon = document.getElementById('theme-icon');
+
+            if (savedTheme === 'dark' || (!savedTheme && prefersDark)) {
+                document.documentElement.classList.add('dark');
+                if (themeIcon) {
+                    themeIcon.classList.remove('fa-moon');
+                    themeIcon.classList.add('fa-sun');
+                }
+            }
+        })();
+    </script>
+</body>
+</html>

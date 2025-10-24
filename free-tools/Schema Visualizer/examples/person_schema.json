@@ -1,0 +1,25 @@
+{
+  "@context": "https://schema.org",
+  "@type": "Person",
+  "name": "John Doe",
+  "jobTitle": "Software Engineer",
+  "telephone": "+1-555-123-4567",
+  "email": "john.doe@example.com",
+  "address": {
+    "@type": "PostalAddress",
+    "streetAddress": "123 Main St",
+    "addressLocality": "San Francisco",
+    "addressRegion": "CA",
+    "postalCode": "94102",
+    "addressCountry": "US"
+  },
+  "worksFor": {
+    "@type": "Organization",
+    "name": "Tech Company Inc.",
+    "url": "https://techcompany.com"
+  },
+  "sameAs": [
+    "https://twitter.com/johndoe",
+    "https://linkedin.com/in/johndoe"
+  ]
+}
