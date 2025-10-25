@@ -3,6 +3,10 @@
  * This shows different ways to use the script detector in your backend
  */
 
+// Load environment variables from .env file (for Browserless API key)
+const { loadEnv } = require('./load-env');
+loadEnv();
+
 const { analyzeAndSave, analyzeBatch, analyzeWebsite, formatAsMarkdown } = require('./src/index');
 
 // Example 1: Analyze a single website and save to markdown
