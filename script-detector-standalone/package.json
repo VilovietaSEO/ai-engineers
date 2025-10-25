@@ -1,0 +1,26 @@
+{
+  "name": "script-detector-standalone",
+  "version": "1.0.0",
+  "description": "Backend-only website technology detection and analysis tool. Detects analytics, marketing pixels, CMS, and tech stack.",
+  "main": "src/index.js",
+  "scripts": {
+    "analyze": "node example.js"
+  },
+  "keywords": [
+    "analytics",
+    "tracking",
+    "pixel-detection",
+    "tech-stack",
+    "website-analysis",
+    "marketing-tools",
+    "seo",
+    "cms-detection"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {},
+  "devDependencies": {}
+}
