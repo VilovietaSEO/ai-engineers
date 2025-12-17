@@ -4,8 +4,17 @@ Audio chunking service for parallel transcription processing
 import os
 from pathlib import Path
 from typing import List, Tuple
-from pydub import AudioSegment
 import math
+
+# Set FFmpeg path in environment BEFORE importing pydub
+FFMPEG_BIN = r'C:\Users\mikem\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.0.1-full_build\bin'
+os.environ['PATH'] = FFMPEG_BIN + os.pathsep + os.environ.get('PATH', '')
+
+from pydub import AudioSegment
+
+# Also set explicitly for pydub
+AudioSegment.converter = os.path.join(FFMPEG_BIN, 'ffmpeg.exe')
+AudioSegment.ffprobe = os.path.join(FFMPEG_BIN, 'ffprobe.exe')
 
 from config import settings
 from logger import logger, log_timer, get_logger

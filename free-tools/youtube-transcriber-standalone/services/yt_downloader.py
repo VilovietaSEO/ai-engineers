@@ -53,6 +53,7 @@ class YouTubeDownloader:
             'socket_timeout': 30,
             'retries': 3,
             'logger': YtDlpLogger(),
+            'ffmpeg_location': r'C:\Users\mikem\AppData\Local\Microsoft\WinGet\Packages\Gyan.FFmpeg_Microsoft.Winget.Source_8wekyb3d8bbwe\ffmpeg-8.0.1-full_build\bin',
         }
 
     async def download_audio(self, url: str) -> Tuple[str, VideoInfo]:
